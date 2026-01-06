@@ -1,0 +1,8 @@
+hypothesis
+ipykernel
+pandas
+openai
+ipywidgets
+dotenv
+google.generativeai
+networkx
