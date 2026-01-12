@@ -1,0 +1,52 @@
+<background>
+This problem concerns conversion between (1) positive integers and (2) their canonical Roman numeral string representations.
+
+Roman numerals use seven symbols with fixed values:
+	- I=1, V=5, X=10, L=50, C=100, D=500, M=1000.
+
+Numeral formation rules (canonical form):
+	1) Additive principle: if a symbol appears after a symbol of equal or greater value, its value is added.
+		 Example: VI = 5 + 1 = 6.
+	2) Subtractive principle: if a symbol appears before a symbol of greater value, its value is subtracted.
+		 Subtraction is restricted to these pairs only:
+			 - I before V or X (IV=4, IX=9)
+			 - X before L or C (XL=40, XC=90)
+			 - C before D or M (CD=400, CM=900)
+	3) Repetition limits:
+			 - V, L, D must not repeat.
+			 - I, X, C, M may repeat at most 3 times consecutively.
+	4) Order of magnitude: symbols are arranged from highest to lowest value left-to-right, except for the allowed subtractive pairs.
+
+Numeric domain:
+	- Standard Roman numerals are defined for integers N where 1 <= N <= 3999.
+	- The output of integer-to-Roman conversion must be a canonical string consistent with the rules above.
+</background>
+
+<custom_data_types>
+N/A
+</custom_data_types>
+
+<function_signature>
+	- Signature: to_numerals(N: int) -> str
+	- Meaning: Convert integer N into its canonical RomanNumeralString.
+</function_signature>
+
+<function_details>
+Function: to_numerals
+	Inputs:
+		- N: integer.
+	Preconditions:
+		- N must satisfy 1 <= N <= 3999.
+	Output:
+		- Returns a canonical RomanNumeralString representing N.
+	Postconditions:
+		- The returned string obeys all canonical formation rules.
+		- from_numerals(to_numerals(N)) == N.
+	Algorithmic behavior (required at the level of the mapping, not implementation details):
+		- The conversion must be consistent with a greedy decomposition over the following value-to-token list in descending order:
+				1000->M, 900->CM, 500->D, 400->CD, 100->C, 90->XC, 50->L, 40->XL, 10->X, 9->IX, 5->V, 4->IV, 1->I.
+		- At each step, append the token while its value fits into the remaining amount, subtracting accordingly, until remainder is 0.
+	Error handling:
+		- If N is outside the domain [1, 3999], the function must raise an exception (e.g., ValueError) indicating out-of-range.
+		- If N is not an integer type, the function must raise an exception (e.g., TypeError) indicating invalid input type.
+</function_details>

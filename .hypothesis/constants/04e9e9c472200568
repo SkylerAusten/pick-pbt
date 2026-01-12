@@ -1,4 +1,0 @@
-# file: c:\Users\me\Desktop\My Repos\pick-pbt\hypothesis_pick\__init__.py
-# hypothesis_version: 6.150.0
-
-['0.1.0', 'ImplicationResult', 'PredicateResult', 'find_disagreements', 'find_stronger_weaker', 'infer_implications']
