@@ -1,0 +1,146 @@
+{
+  "timestamp_utc": "20260115_190742Z",
+  "problem": "roman_numerals",
+  "settings": {
+    "FREEFORM_SPEC": false,
+    "MODEL_NAME": "gemini-2.5-flash",
+    "TEMPERATURE": 0.2,
+    "MAX_OUTPUT_TOKENS": null,
+    "TIMEOUT_SEC": 60,
+    "python_version": "3.11.2 (main, Apr 28 2025, 14:11:48) [GCC 12.2.0]",
+    "platform": "Linux-6.1.0-42-amd64-x86_64-with-glibc2.36"
+  },
+  "prompts": {
+    "properties_prompt": "You are helping me generate property-based tests (PBT) in Python.\nMy test framework will be Hypothesis.\n\nProblem specification:\n<background>\nThis problem concerns conversion between (1) positive integers and (2) their canonical Roman numeral string representations.\n\nRoman numerals use seven symbols with fixed values:\n\t- I=1, V=5, X=10, L=50, C=100, D=500, M=1000.\n\nNumeral formation rules (canonical form):\n\t1) Additive principle: if a symbol appears after a symbol of equal or greater value, its value is added.\n\t\t Example: VI = 5 + 1 = 6.\n\t2) Subtractive principle: if a symbol appears before a symbol of greater value, its value is subtracted.\n\t\t Subtraction is restricted to these pairs only:\n\t\t\t - I before V or X (IV=4, IX=9)\n\t\t\t - X before L or C (XL=40, XC=90)\n\t\t\t - C before D or M (CD=400, CM=900)\n\t3) Repetition limits:\n\t\t\t - V, L, D must not repeat.\n\t\t\t - I, X, C, M may repeat at most 3 times consecutively.\n\t4) Order of magnitude: symbols are arranged from highest to lowest value left-to-right, except for the allowed subtractive pairs.\n\nNumeric domain:\n\t- Standard Roman numerals are defined for integers N where 1 <= N <= 3999.\n\t- The output of integer-to-Roman conversion must be a canonical string consistent with the rules above.\n</background>\n\n<custom_data_types>\nN/A\n</custom_data_types>\n\n<function_signature>\n\t- Signature: to_numerals(N: int) -> str\n\t- Meaning: Convert integer N into its canonical RomanNumeralString.\n</function_signature>\n\n<function_details>\nFunction: to_numerals\n\tInputs:\n\t\t- N: integer.\n\tPreconditions:\n\t\t- N must satisfy 1 <= N <= 3999.\n\tOutput:\n\t\t- Returns a canonical RomanNumeralString representing N.\n\tPostconditions:\n\t\t- The returned string obeys all canonical formation rules.\n\t\t- from_numerals(to_numerals(N)) == N.\n\tAlgorithmic behavior (required at the level of the mapping, not implementation details):\n\t\t- The conversion must be consistent with a greedy decomposition over the following value-to-token list in descending order:\n\t\t\t\t1000->M, 900->CM, 500->D, 400->CD, 100->C, 90->XC, 50->L, 40->XL, 10->X, 9->IX, 5->V, 4->IV, 1->I.\n\t\t- At each step, append the token while its value fits into the remaining amount, subtracting accordingly, until remainder is 0.\n\tError handling:\n\t\t- If N is outside the domain [1, 3999], the function must raise an exception (e.g., ValueError) indicating out-of-range.\n\t\t- If N is not an integer type, the function must raise an exception (e.g., TypeError) indicating invalid input type.\n</function_details>\n\nLabeled spec expectations (freeform_spec=false):\n- <background>: high-level context, definitions, and rules.\n- <custom_data_types>: any custom types, encodings, invariants, examples.\n- <function_signature>: names, parameters, return types (as text), and meaning.\n- <function_details>: precise behavior, preconditions, postconditions, errors.\n\nTask:\n- Produce 15 distinct properties of the target function(s).\n- Each property MUST be testable via random data generation (Hypothesis).\n- Phrase each property precisely using quantifiers like 'for all' / 'there exists' and include any necessary preconditions.\n- Include edge cases, invariants, metamorphic properties, and error/exception behavior when relevant.\n- Do NOT include any code.\n\nOutput requirements (STRICT):\n- Output MUST be valid JSON and NOTHING ELSE.\n- Output MUST be exactly ONE JSON object matching one of the schemas below.\n\nSchema A (success):\n{\n  \"result\": [\n    <property description string>,\n    <property description string>,\n    ...\n  ],\n  \"explanation\": null\n}\n\nSchema B (insufficient/unknown):\n{\n  \"result\": null,\n  \"explanation\": <string describing what is missing / ambiguous and what to add>\n}\n\nAdditional constraints:\n- Each property in result is a string describing one property statement.\n- Do not wrap in Markdown. Do not include code blocks.",
+    "signature_strategy_prompt": "You are helping me generate property-based tests (PBT) in Python.\nMy test framework will be Hypothesis.\n\nProblem name: roman_numerals\n\nProblem specification:\n<background>\nThis problem concerns conversion between (1) positive integers and (2) their canonical Roman numeral string representations.\n\nRoman numerals use seven symbols with fixed values:\n\t- I=1, V=5, X=10, L=50, C=100, D=500, M=1000.\n\nNumeral formation rules (canonical form):\n\t1) Additive principle: if a symbol appears after a symbol of equal or greater value, its value is added.\n\t\t Example: VI = 5 + 1 = 6.\n\t2) Subtractive principle: if a symbol appears before a symbol of greater value, its value is subtracted.\n\t\t Subtraction is restricted to these pairs only:\n\t\t\t - I before V or X (IV=4, IX=9)\n\t\t\t - X before L or C (XL=40, XC=90)\n\t\t\t - C before D or M (CD=400, CM=900)\n\t3) Repetition limits:\n\t\t\t - V, L, D must not repeat.\n\t\t\t - I, X, C, M may repeat at most 3 times consecutively.\n\t4) Order of magnitude: symbols are arranged from highest to lowest value left-to-right, except for the allowed subtractive pairs.\n\nNumeric domain:\n\t- Standard Roman numerals are defined for integers N where 1 <= N <= 3999.\n\t- The output of integer-to-Roman conversion must be a canonical string consistent with the rules above.\n</background>\n\n<custom_data_types>\nN/A\n</custom_data_types>\n\n<function_signature>\n\t- Signature: to_numerals(N: int) -> str\n\t- Meaning: Convert integer N into its canonical RomanNumeralString.\n</function_signature>\n\n<function_details>\nFunction: to_numerals\n\tInputs:\n\t\t- N: integer.\n\tPreconditions:\n\t\t- N must satisfy 1 <= N <= 3999.\n\tOutput:\n\t\t- Returns a canonical RomanNumeralString representing N.\n\tPostconditions:\n\t\t- The returned string obeys all canonical formation rules.\n\t\t- from_numerals(to_numerals(N)) == N.\n\tAlgorithmic behavior (required at the level of the mapping, not implementation details):\n\t\t- The conversion must be consistent with a greedy decomposition over the following value-to-token list in descending order:\n\t\t\t\t1000->M, 900->CM, 500->D, 400->CD, 100->C, 90->XC, 50->L, 40->XL, 10->X, 9->IX, 5->V, 4->IV, 1->I.\n\t\t- At each step, append the token while its value fits into the remaining amount, subtracting accordingly, until remainder is 0.\n\tError handling:\n\t\t- If N is outside the domain [1, 3999], the function must raise an exception (e.g., ValueError) indicating out-of-range.\n\t\t- If N is not an integer type, the function must raise an exception (e.g., TypeError) indicating invalid input type.\n</function_details>\n\nLabeled spec expectations (freeform_spec=false):\n- <background>: high-level context, definitions, and rules.\n- <custom_data_types>: any custom types, encodings, invariants, examples.\n- <function_signature>: names, parameters, return types (as text), and meaning.\n- <function_details>: precise behavior, preconditions, postconditions, errors.\n\nTask:\n1) Identify the target function under test, its argument list, and its return type.\n2) Propose a standard *property-checking* function signature suitable for Hypothesis.\n   - It should accept the function under test (as a Callable) and the same inputs that function expects.\n   - It must return a boolean (True/False) indicating whether the property holds.\n3) Provide Hypothesis strategies to generate valid inputs for the property-checking function.\n   - Provide strategies for the *inputs* (not for the Callable itself).\n   - Respect any constraints/invariants from the spec.\n   - If some constraints are hard, propose assume()-style preconditions (as strings) or filtering.\n\nOutput requirements (STRICT):\n- Output MUST be valid JSON and NOTHING ELSE.\n- If the spec is insufficient or the inputs are impossible/unsupported to generate with Hypothesis, return:\n  {\"result\": null, \"explanation\": <string>}.\n- Otherwise return an object of this shape:\n  {\n    \"result\": {\n      \"function_under_test\": {\"name\": <string>, \"args\": [<string>...], \"returns\": <string>},\n      \"property_function\": {\"name\": <string>, \"typing\": <string>, \"args\": [<string>...], \"returns\": \"bool\"},\n      \"strategies\": [\n        {\"arg\": <string>, \"strategy\": <string>, \"notes\": <string|null>},\n        ...\n      ],\n      \"assumptions\": [<string>...],\n      \"imports\": [<string>...]\n    }\n  }\n- Provide at most 12 strategy entries.\n- The values in \"strategy\" should be Python expressions like 'st.integers(...)' as STRINGS (not full code)."
+  },
+  "responses": {
+    "properties": {
+      "raw": "{\n  \"result\": [\n    \"For all integers N such that 1 <= N <= 3999, the result of to_numerals(N) must be a string.\",\n    \"For all integers N such that N < 1, calling to_numerals(N) must raise a ValueError.\",\n    \"For all integers N such that N > 3999, calling to_numerals(N) must raise a ValueError.\",\n    \"For all inputs N that are not of type int (e.g., float, str, bool, None), calling to_numerals(N) must raise a TypeError.\",\n    \"For all integers N such that 1 <= N <= 3999, every character in the string returned by to_numerals(N) must be one of 'I', 'V', 'X', 'L', 'C', 'D', 'M'.\",\n    \"For all integers N such that 1 <= N <= 3999, the string returned by to_numerals(N) must not contain the substrings 'VV', 'LL', or 'DD'.\",\n    \"For all integers N such that 1 <= N <= 3999, the string returned by to_numerals(N) must not contain the substrings 'IIII', 'XXXX', 'CCCC', or 'MMMM'.\",\n    \"For all integers N such that 1 <= N <= 3999, if a two-character substring s1s2 in to_numerals(N) has value(s1) < value(s2), then s1s2 must be one of 'IV', 'IX', 'XL', 'XC', 'CD', 'CM'.\",\n    \"For all integers N such that 1 <= N <= 3999, and for any two adjacent characters s1s2 in to_numerals(N) that do not form one of the allowed subtractive pairs ('IV', 'IX', 'XL', 'XC', 'CD', 'CM'), it must be true that value(s1) >= value(s2).\",\n    \"The result of to_numerals(1) must be the string 'I'.\",\n    \"The result of to_numerals(3999) must be the string 'MMMCMXCIX'.\",\n    \"The results of to_numerals(4), to_numerals(9), to_numerals(40), to_numerals(90), to_numerals(400), and to_numerals(900) must be 'IV', 'IX', 'XL', 'XC', 'CD', and 'CM' respectively.\",\n    \"For all integers N such that 1 <= N <= 3999, if from_numerals is a function that correctly converts a canonical Roman numeral string to its integer value, then from_numerals(to_numerals(N)) must be equal to N.\",\n    \"For all distinct integers N1 and N2 such that 1 <= N1 <= 3999 and 1 <= N2 <= 3999, to_numerals(N1) must not be equal to to_numerals(N2).\",\n    \"For all integers N such that 1 <= N <= 3999, the length of the string returned by to_numerals(N) must be between 1 and 15, inclusive.\"\n  ],\n  \"explanation\": null\n}",
+      "parsed": {
+        "result": [
+          "For all integers N such that 1 <= N <= 3999, the result of to_numerals(N) must be a string.",
+          "For all integers N such that N < 1, calling to_numerals(N) must raise a ValueError.",
+          "For all integers N such that N > 3999, calling to_numerals(N) must raise a ValueError.",
+          "For all inputs N that are not of type int (e.g., float, str, bool, None), calling to_numerals(N) must raise a TypeError.",
+          "For all integers N such that 1 <= N <= 3999, every character in the string returned by to_numerals(N) must be one of 'I', 'V', 'X', 'L', 'C', 'D', 'M'.",
+          "For all integers N such that 1 <= N <= 3999, the string returned by to_numerals(N) must not contain the substrings 'VV', 'LL', or 'DD'.",
+          "For all integers N such that 1 <= N <= 3999, the string returned by to_numerals(N) must not contain the substrings 'IIII', 'XXXX', 'CCCC', or 'MMMM'.",
+          "For all integers N such that 1 <= N <= 3999, if a two-character substring s1s2 in to_numerals(N) has value(s1) < value(s2), then s1s2 must be one of 'IV', 'IX', 'XL', 'XC', 'CD', 'CM'.",
+          "For all integers N such that 1 <= N <= 3999, and for any two adjacent characters s1s2 in to_numerals(N) that do not form one of the allowed subtractive pairs ('IV', 'IX', 'XL', 'XC', 'CD', 'CM'), it must be true that value(s1) >= value(s2).",
+          "The result of to_numerals(1) must be the string 'I'.",
+          "The result of to_numerals(3999) must be the string 'MMMCMXCIX'.",
+          "The results of to_numerals(4), to_numerals(9), to_numerals(40), to_numerals(90), to_numerals(400), and to_numerals(900) must be 'IV', 'IX', 'XL', 'XC', 'CD', and 'CM' respectively.",
+          "For all integers N such that 1 <= N <= 3999, if from_numerals is a function that correctly converts a canonical Roman numeral string to its integer value, then from_numerals(to_numerals(N)) must be equal to N.",
+          "For all distinct integers N1 and N2 such that 1 <= N1 <= 3999 and 1 <= N2 <= 3999, to_numerals(N1) must not be equal to to_numerals(N2).",
+          "For all integers N such that 1 <= N <= 3999, the length of the string returned by to_numerals(N) must be between 1 and 15, inclusive."
+        ],
+        "explanation": null
+      },
+      "error": null
+    },
+    "signature_strategies": {
+      "raw": "",
+      "parsed": null,
+      "error": "ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash\\nPlease retry in 3.953542196s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerDayPerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-2.5-flash'}, 'quotaValue': '20'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '3s'}]}}"
+    },
+    "property_details": {
+      "test_for_all_integers_n": {
+        "error": "ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash\\nPlease retry in 4.199963399s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerDayPerProjectPerModel-FreeTier', 'quotaDimensions': {'model': 'gemini-2.5-flash', 'location': 'global'}, 'quotaValue': '20'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '4s'}]}}",
+        "raw": "{\n  \"signature\": {\n    \"name\": \"to_numerals\",\n    \"args\": [\"N\"],\n    \"returns\": \"str\"\n  },\n  \"implementations\": [\n    \"Iterative greedy approach: Define a list of (value, numeral) pairs in descending order (e.g., (1000, 'M'), (900, 'CM'), ... (1, 'I')). Iterate through this list. For each pair, repeatedly append the numeral to the result string and subtract the value from N as long as N is greater than or equal to the current value. Continue until N becomes 0.\",\n    \"Digit-by-digit lookup: Create separate lookup tables for thousands, hundreds, tens, and ones. For example, a 'hundreds' table might map 1 to 'C', 2 to 'CC', 4 to 'CD', 9 to 'CM', etc. Decompose N into its thousands, hundreds, tens, and ones digits. Use the respective lookup table for each digit and concatenate the results. For N=1994, this would be thousands[1] + hundreds[9] + tens[9] + ones[4].\"\n  ],\n  \"strategies\": [\n    {\n      \"arg\": \"N\",\n      \"strategy\": \"st.integers(min_value=1, max_value=3999)\",\n      \"notes\": \"N must be an integer between 1 and 3999, inclusive, as per problem specification.\"\n    }\n  ]\n}"
+      },
+      "test_for_all_inputs_n": {
+        "parsed": {
+          "signature": {
+            "name": "to_numerals",
+            "args": [
+              "N"
+            ],
+            "returns": "str"
+          },
+          "implementations": [
+            "Iterative Greedy Decomposition: Define a list of (value, numeral) pairs in descending order (e.g., (1000, \"M\"), (900, \"CM\"), ..., (1, \"I\")). Initialize an empty result string. Iterate through the list; for each pair, repeatedly append the numeral to the result and subtract its value from N until N is less than the current value. Continue until N becomes 0. Include initial checks for N's type and range.",
+            "Place-Value Decomposition: Break down the input integer N into its thousands, hundreds, tens, and ones components. For each place value, use a specific mapping (e.g., for hundreds: {1: \"C\", 2: \"CC\", ..., 9: \"CM\"}) to convert the digit into its Roman numeral representation for that place. Concatenate these place-value strings to form the final Roman numeral. Include initial checks for N's type and range."
+          ],
+          "strategies": [
+            {
+              "arg": "N",
+              "strategy": "st.integers(min_value=1, max_value=3999)",
+              "notes": "Covers the valid range for Roman numeral conversion."
+            }
+          ]
+        },
+        "raw": "{\n  \"signature\": {\n    \"name\": \"to_numerals\",\n    \"args\": [\"N\"],\n    \"returns\": \"str\"\n  },\n  \"implementations\": [\n    \"Iterative Greedy Decomposition: Define a list of (value, numeral) pairs in descending order (e.g., (1000, \\\"M\\\"), (900, \\\"CM\\\"), ..., (1, \\\"I\\\")). Initialize an empty result string. Iterate through the list; for each pair, repeatedly append the numeral to the result and subtract its value from N until N is less than the current value. Continue until N becomes 0. Include initial checks for N's type and range.\",\n    \"Place-Value Decomposition: Break down the input integer N into its thousands, hundreds, tens, and ones components. For each place value, use a specific mapping (e.g., for hundreds: {1: \\\"C\\\", 2: \\\"CC\\\", ..., 9: \\\"CM\\\"}) to convert the digit into its Roman numeral representation for that place. Concatenate these place-value strings to form the final Roman numeral. Include initial checks for N's type and range.\"\n  ],\n  \"strategies\": [\n    {\n      \"arg\": \"N\",\n      \"strategy\": \"st.integers(min_value=1, max_value=3999)\",\n      \"notes\": \"Covers the valid range for Roman numeral conversion.\"\n    }\n  ]\n}"
+      },
+      "test_the_result_of_to_numerals": {
+        "parsed": {
+          "signature": {
+            "name": "to_numerals",
+            "args": [
+              "N"
+            ],
+            "returns": "str"
+          },
+          "implementations": [
+            "A greedy iterative approach using a predefined list of (value, numeral) pairs sorted in descending order. It iterates through the list, appending the numeral and subtracting its value from N as long as N is greater than or equal to the current value, until N becomes 0.",
+            "A place-value decomposition approach. It breaks down the integer N into thousands, hundreds, tens, and units. For each place value, it uses a precomputed lookup array (e.g., ['M', 'MM', 'MMM'] for thousands, ['C', 'CC', ..., 'CM'] for hundreds) to directly retrieve the corresponding Roman numeral string segment, then concatenates them."
+          ],
+          "strategies": [
+            {
+              "arg": "N",
+              "strategy": "st.integers(min_value=1, max_value=3999)",
+              "notes": "Constraints for N are 1 <= N <= 3999 as per problem specification."
+            }
+          ]
+        },
+        "raw": "{\n  \"signature\": {\n    \"name\": \"to_numerals\",\n    \"args\": [\"N\"],\n    \"returns\": \"str\"\n  },\n  \"implementations\": [\n    \"A greedy iterative approach using a predefined list of (value, numeral) pairs sorted in descending order. It iterates through the list, appending the numeral and subtracting its value from N as long as N is greater than or equal to the current value, until N becomes 0.\",\n    \"A place-value decomposition approach. It breaks down the integer N into thousands, hundreds, tens, and units. For each place value, it uses a precomputed lookup array (e.g., ['M', 'MM', 'MMM'] for thousands, ['C', 'CC', ..., 'CM'] for hundreds) to directly retrieve the corresponding Roman numeral string segment, then concatenates them.\"\n  ],\n  \"strategies\": [\n    {\n      \"arg\": \"N\",\n      \"strategy\": \"st.integers(min_value=1, max_value=3999)\",\n      \"notes\": \"Constraints for N are 1 <= N <= 3999 as per problem specification.\"\n    }\n  ]\n}"
+      },
+      "test_the_results_of_to_numerals": {
+        "parsed": {
+          "signature": {
+            "name": "to_numerals",
+            "args": [
+              "N"
+            ],
+            "returns": "str"
+          },
+          "implementations": [
+            "Iterative Greedy Approach: Uses a predefined list of (value, numeral) pairs sorted in descending order. It iterates through this list, appending the numeral to the result string as many times as its value fits into the remaining number, and subtracts the value, until the number becomes zero. This directly implements the greedy decomposition rule.",
+            "Digit-by-Digit Lookup Approach: Decomposes the input integer N into its thousands, hundreds, tens, and units components. For each component, it uses a separate lookup array (e.g., for 1-9, 10-90, 100-900, 1000-3000) that directly maps the digit's value at that place to its Roman numeral representation (e.g., 40 maps to 'XL', 900 maps to 'CM'). The results from each place value are then concatenated."
+          ],
+          "strategies": [
+            {
+              "arg": "N",
+              "strategy": "st.integers(min_value=1, max_value=3999)",
+              "notes": "N must be an integer between 1 and 3999, inclusive, as per the problem specification for standard Roman numerals."
+            }
+          ]
+        },
+        "raw": "{\n  \"signature\": {\n    \"name\": \"to_numerals\",\n    \"args\": [\"N\"],\n    \"returns\": \"str\"\n  },\n  \"implementations\": [\n    \"Iterative Greedy Approach: Uses a predefined list of (value, numeral) pairs sorted in descending order. It iterates through this list, appending the numeral to the result string as many times as its value fits into the remaining number, and subtracts the value, until the number becomes zero. This directly implements the greedy decomposition rule.\",\n    \"Digit-by-Digit Lookup Approach: Decomposes the input integer N into its thousands, hundreds, tens, and units components. For each component, it uses a separate lookup array (e.g., for 1-9, 10-90, 100-900, 1000-3000) that directly maps the digit's value at that place to its Roman numeral representation (e.g., 40 maps to 'XL', 900 maps to 'CM'). The results from each place value are then concatenated.\"\n  ],\n  \"strategies\": [\n    {\n      \"arg\": \"N\",\n      \"strategy\": \"st.integers(min_value=1, max_value=3999)\",\n      \"notes\": \"N must be an integer between 1 and 3999, inclusive, as per the problem specification for standard Roman numerals.\"\n    }\n  ]\n}"
+      },
+      "test_for_all_distinct_integers": {
+        "parsed": {
+          "signature": {
+            "name": "to_numerals",
+            "args": [
+              "N"
+            ],
+            "returns": "str"
+          },
+          "implementations": [
+            "Iterative greedy approach: Define a list of (value, numeral) pairs in descending order (e.g., (1000, 'M'), (900, 'CM'), ... (1, 'I')). Iterate through this list. For each pair, repeatedly append the numeral to the result string and subtract the value from N as long as N is greater than or equal to the current value. Continue until N becomes 0.",
+            "Digit-by-digit lookup: Create separate lookup tables for thousands, hundreds, tens, and ones. For example, a 'hundreds' table might map 1 to 'C', 2 to 'CC', 4 to 'CD', 9 to 'CM', etc. Decompose N into its thousands, hundreds, tens, and ones digits. Use the respective lookup table for each digit and concatenate the results. For N=1994, this would be thousands[1] + hundreds[9] + tens[9] + ones[4]."
+          ],
+          "strategies": [
+            {
+              "arg": "N",
+              "strategy": "st.integers(min_value=1, max_value=3999)",
+              "notes": "N must be an integer between 1 and 3999, inclusive, as per problem specification."
+            }
+          ]
+        },
+        "raw": "{\n  \"signature\": {\n    \"name\": \"to_numerals\",\n    \"args\": [\"N\"],\n    \"returns\": \"str\"\n  },\n  \"implementations\": [\n    \"Iterative greedy approach: Define a list of (value, numeral) pairs in descending order (e.g., (1000, 'M'), (900, 'CM'), ... (1, 'I')). Iterate through this list. For each pair, repeatedly append the numeral to the result string and subtract the value from N as long as N is greater than or equal to the current value. Continue until N becomes 0.\",\n    \"Digit-by-digit lookup: Create separate lookup tables for thousands, hundreds, tens, and ones. For example, a 'hundreds' table might map 1 to 'C', 2 to 'CC', 4 to 'CD', 9 to 'CM', etc. Decompose N into its thousands, hundreds, tens, and ones digits. Use the respective lookup table for each digit and concatenate the results. For N=1994, this would be thousands[1] + hundreds[9] + tens[9] + ones[4].\"\n  ],\n  \"strategies\": [\n    {\n      \"arg\": \"N\",\n      \"strategy\": \"st.integers(min_value=1, max_value=3999)\",\n      \"notes\": \"N must be an integer between 1 and 3999, inclusive, as per problem specification.\"\n    }\n  ]\n}"
+      }
+    }
+  }
+}
