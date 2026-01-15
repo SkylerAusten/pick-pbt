@@ -1,7 +1,8 @@
 .env
 .hypothesis/
-.hypothesis/*
-hypothesis_pick/__pycache__/
-hypothesis_pick/__pycache__/*
-hypothesis_pick\__pycache__\
-hypothesis_pick\__pycache__\*
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so

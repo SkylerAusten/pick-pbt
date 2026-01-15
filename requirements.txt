@@ -6,3 +6,4 @@ ipywidgets
 dotenv
 google.generativeai
 networkx
+pytest

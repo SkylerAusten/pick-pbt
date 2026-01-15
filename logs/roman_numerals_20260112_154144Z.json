@@ -1,0 +1,79 @@
+{
+  "timestamp_utc": "20260112_154144Z",
+  "problem": "roman_numerals",
+  "settings": {
+    "FREEFORM_SPEC": false,
+    "MODEL_NAME": "gemini-2.5-flash",
+    "TEMPERATURE": 0.2,
+    "MAX_OUTPUT_TOKENS": null,
+    "TIMEOUT_SEC": 60,
+    "python_version": "3.13.2 (tags/v3.13.2:4f8bb39, Feb  4 2025, 15:23:48) [MSC v.1942 64 bit (AMD64)]",
+    "platform": "Windows-11-10.0.26100-SP0"
+  },
+  "prompts": {
+    "properties_prompt": "You are helping me generate property-based tests (PBT) in Python.\nMy test framework will be Hypothesis.\n\nProblem name: roman_numerals\n\nProblem specification:\n<background>\nThis problem concerns conversion between (1) positive integers and (2) their canonical Roman numeral string representations.\n\nRoman numerals use seven symbols with fixed values:\n\t- I=1, V=5, X=10, L=50, C=100, D=500, M=1000.\n\nNumeral formation rules (canonical form):\n\t1) Additive principle: if a symbol appears after a symbol of equal or greater value, its value is added.\n\t\t Example: VI = 5 + 1 = 6.\n\t2) Subtractive principle: if a symbol appears before a symbol of greater value, its value is subtracted.\n\t\t Subtraction is restricted to these pairs only:\n\t\t\t - I before V or X (IV=4, IX=9)\n\t\t\t - X before L or C (XL=40, XC=90)\n\t\t\t - C before D or M (CD=400, CM=900)\n\t3) Repetition limits:\n\t\t\t - V, L, D must not repeat.\n\t\t\t - I, X, C, M may repeat at most 3 times consecutively.\n\t4) Order of magnitude: symbols are arranged from highest to lowest value left-to-right, except for the allowed subtractive pairs.\n\nNumeric domain:\n\t- Standard Roman numerals are defined for integers N where 1 <= N <= 3999.\n\t- The output of integer-to-Roman conversion must be a canonical string consistent with the rules above.\n</background>\n\n<custom_data_types>\nN/A\n</custom_data_types>\n\n<function_signature>\n\t- Signature: to_numerals(N: int) -> str\n\t- Meaning: Convert integer N into its canonical RomanNumeralString.\n</function_signature>\n\n<function_details>\nFunction: to_numerals\n\tInputs:\n\t\t- N: integer.\n\tPreconditions:\n\t\t- N must satisfy 1 <= N <= 3999.\n\tOutput:\n\t\t- Returns a canonical RomanNumeralString representing N.\n\tPostconditions:\n\t\t- The returned string obeys all canonical formation rules.\n\t\t- from_numerals(to_numerals(N)) == N.\n\tAlgorithmic behavior (required at the level of the mapping, not implementation details):\n\t\t- The conversion must be consistent with a greedy decomposition over the following value-to-token list in descending order:\n\t\t\t\t1000->M, 900->CM, 500->D, 400->CD, 100->C, 90->XC, 50->L, 40->XL, 10->X, 9->IX, 5->V, 4->IV, 1->I.\n\t\t- At each step, append the token while its value fits into the remaining amount, subtracting accordingly, until remainder is 0.\n\tError handling:\n\t\t- If N is outside the domain [1, 3999], the function must raise an exception (e.g., ValueError) indicating out-of-range.\n\t\t- If N is not an integer type, the function must raise an exception (e.g., TypeError) indicating invalid input type.\n</function_details>\n\nLabeled spec expectations (freeform_spec=false):\n- <background>: high-level context, definitions, and rules.\n- <custom_data_types>: any custom types, encodings, invariants, examples.\n- <function_signature>: names, parameters, return types (as text), and meaning.\n- <function_details>: precise behavior, preconditions, postconditions, errors.\n\nTask:\n- Produce 15 distinct properties of the target function(s).\n- Each property MUST be testable via random data generation (Hypothesis).\n- Phrase each property precisely using quantifiers like 'for all' / 'there exists' and include any necessary preconditions.\n- Include edge cases, invariants, metamorphic properties, and error/exception behavior when relevant.\n- Do NOT include any code.\n\nOutput requirements (STRICT):\n- Output MUST be valid JSON and NOTHING ELSE.\n- Output MUST be exactly ONE JSON object matching one of the schemas below.\n\nSchema A (success):\n{\n  \"result\": [<string>, <string>, ...],\n  \"explanation\": null\n}\n\nSchema B (insufficient/unknown):\n{\n  \"result\": null,\n  \"explanation\": <string describing what is missing / ambiguous and what to add>\n}\n\nAdditional constraints:\n- Each string in result must be ONE property statement.\n- Do not wrap in Markdown. Do not include code blocks.",
+    "signature_strategy_prompt": "You are helping me generate property-based tests (PBT) in Python.\nMy test framework will be Hypothesis.\n\nProblem name: roman_numerals\n\nProblem specification:\n<background>\nThis problem concerns conversion between (1) positive integers and (2) their canonical Roman numeral string representations.\n\nRoman numerals use seven symbols with fixed values:\n\t- I=1, V=5, X=10, L=50, C=100, D=500, M=1000.\n\nNumeral formation rules (canonical form):\n\t1) Additive principle: if a symbol appears after a symbol of equal or greater value, its value is added.\n\t\t Example: VI = 5 + 1 = 6.\n\t2) Subtractive principle: if a symbol appears before a symbol of greater value, its value is subtracted.\n\t\t Subtraction is restricted to these pairs only:\n\t\t\t - I before V or X (IV=4, IX=9)\n\t\t\t - X before L or C (XL=40, XC=90)\n\t\t\t - C before D or M (CD=400, CM=900)\n\t3) Repetition limits:\n\t\t\t - V, L, D must not repeat.\n\t\t\t - I, X, C, M may repeat at most 3 times consecutively.\n\t4) Order of magnitude: symbols are arranged from highest to lowest value left-to-right, except for the allowed subtractive pairs.\n\nNumeric domain:\n\t- Standard Roman numerals are defined for integers N where 1 <= N <= 3999.\n\t- The output of integer-to-Roman conversion must be a canonical string consistent with the rules above.\n</background>\n\n<custom_data_types>\nN/A\n</custom_data_types>\n\n<function_signature>\n\t- Signature: to_numerals(N: int) -> str\n\t- Meaning: Convert integer N into its canonical RomanNumeralString.\n</function_signature>\n\n<function_details>\nFunction: to_numerals\n\tInputs:\n\t\t- N: integer.\n\tPreconditions:\n\t\t- N must satisfy 1 <= N <= 3999.\n\tOutput:\n\t\t- Returns a canonical RomanNumeralString representing N.\n\tPostconditions:\n\t\t- The returned string obeys all canonical formation rules.\n\t\t- from_numerals(to_numerals(N)) == N.\n\tAlgorithmic behavior (required at the level of the mapping, not implementation details):\n\t\t- The conversion must be consistent with a greedy decomposition over the following value-to-token list in descending order:\n\t\t\t\t1000->M, 900->CM, 500->D, 400->CD, 100->C, 90->XC, 50->L, 40->XL, 10->X, 9->IX, 5->V, 4->IV, 1->I.\n\t\t- At each step, append the token while its value fits into the remaining amount, subtracting accordingly, until remainder is 0.\n\tError handling:\n\t\t- If N is outside the domain [1, 3999], the function must raise an exception (e.g., ValueError) indicating out-of-range.\n\t\t- If N is not an integer type, the function must raise an exception (e.g., TypeError) indicating invalid input type.\n</function_details>\n\nLabeled spec expectations (freeform_spec=false):\n- <background>: high-level context, definitions, and rules.\n- <custom_data_types>: any custom types, encodings, invariants, examples.\n- <function_signature>: names, parameters, return types (as text), and meaning.\n- <function_details>: precise behavior, preconditions, postconditions, errors.\n\nTask:\n1) Identify the target function under test, its argument list, and its return type.\n2) Propose a standard *property-checking* function signature suitable for Hypothesis.\n   - It should accept the function under test (as a Callable) and the same inputs that function expects.\n   - It must return a boolean (True/False) indicating whether the property holds.\n3) Provide Hypothesis strategies to generate valid inputs for the property-checking function.\n   - Provide strategies for the *inputs* (not for the Callable itself).\n   - Respect any constraints/invariants from the spec.\n   - If some constraints are hard, propose assume()-style preconditions (as strings) or filtering.\n\nOutput requirements (STRICT):\n- Output MUST be valid JSON and NOTHING ELSE.\n- If the spec is insufficient or the inputs are impossible/unsupported to generate with Hypothesis, return:\n  {\"result\": null, \"explanation\": <string>}.\n- Otherwise return an object of this shape:\n  {\n    \"result\": {\n      \"function_under_test\": {\"name\": <string>, \"args\": [<string>...], \"returns\": <string>},\n      \"property_function\": {\"name\": <string>, \"typing\": <string>, \"args\": [<string>...], \"returns\": \"bool\"},\n      \"strategies\": [\n        {\"arg\": <string>, \"strategy\": <string>, \"notes\": <string|null>},\n        ...\n      ],\n      \"assumptions\": [<string>...],\n      \"imports\": [<string>...]\n    }\n  }\n- Provide at most 12 strategy entries.\n- The values in \"strategy\" should be Python expressions like 'st.integers(...)' as STRINGS (not full code)."
+  },
+  "responses": {
+    "properties": {
+      "raw": "{\n  \"result\": [\n    \"For any integer N such that 1 <= N <= 3999, it must be true that from_numerals(to_numerals(N)) == N.\",\n    \"For any integer N such that 1 <= N <= 3999, the return value of to_numerals(N) must be a string.\",\n    \"For any integer N such that 1 <= N <= 3999, every character in the string returned by to_numerals(N) must be one of 'I', 'V', 'X', 'L', 'C', 'D', 'M'.\",\n    \"For any integer N such that 1 <= N <= 3999, the Roman numeral string returned by to_numerals(N) must not contain the substrings 'VV', 'LL', or 'DD'.\",\n    \"For any integer N such that 1 <= N <= 3999, the Roman numeral string returned by to_numerals(N) must not contain the substrings 'IIII', 'XXXX', 'CCCC', or 'MMMM'.\",\n    \"For any integer N such that 1 <= N <= 3999, the Roman numeral string returned by to_numerals(N) must not contain any two-character subtractive pair other than 'IV', 'IX', 'XL', 'XC', 'CD', 'CM'.\",\n    \"For any integer N such that 1 <= N <= 3999, the Roman numeral string to_numerals(N) must be decomposable into a sequence of tokens from the set {M, CM, D, CD, C, XC, L, XL, X, IX, V, IV, I} such that the integer values corresponding to these tokens appear in non-increasing order.\",\n    \"to_numerals(1) must return the string \\\"I\\\".\",\n    \"to_numerals(3999) must return the string \\\"MMMCMXCIX\\\".\",\n    \"For any N in the set {4, 9, 40, 90, 400, 900}, to_numerals(N) must return the specific canonical Roman numeral string (IV, IX, XL, XC, CD, CM respectively).\",\n    \"For any N in the set {3, 8, 30, 80, 300, 800, 3000}, to_numerals(N) must return the specific canonical Roman numeral string (III, VIII, XXX, LXXX, CCC, DCCC, MMM respectively).\",\n    \"For any integer N such that N < 1, calling to_numerals(N) must raise a ValueError.\",\n    \"For any integer N such that N > 3999, calling to_numerals(N) must raise a ValueError.\",\n    \"For any input N that is not an integer (e.g., a float, string, None, or boolean), calling to_numerals(N) must raise a TypeError.\",\n    \"For any integer N such that 1 <= N <= 3999, the length of the string returned by to_numerals(N) must be between 1 and 15 (inclusive).\"\n  ],\n  \"explanation\": null\n}",
+      "parsed": {
+        "result": [
+          "For any integer N such that 1 <= N <= 3999, it must be true that from_numerals(to_numerals(N)) == N.",
+          "For any integer N such that 1 <= N <= 3999, the return value of to_numerals(N) must be a string.",
+          "For any integer N such that 1 <= N <= 3999, every character in the string returned by to_numerals(N) must be one of 'I', 'V', 'X', 'L', 'C', 'D', 'M'.",
+          "For any integer N such that 1 <= N <= 3999, the Roman numeral string returned by to_numerals(N) must not contain the substrings 'VV', 'LL', or 'DD'.",
+          "For any integer N such that 1 <= N <= 3999, the Roman numeral string returned by to_numerals(N) must not contain the substrings 'IIII', 'XXXX', 'CCCC', or 'MMMM'.",
+          "For any integer N such that 1 <= N <= 3999, the Roman numeral string returned by to_numerals(N) must not contain any two-character subtractive pair other than 'IV', 'IX', 'XL', 'XC', 'CD', 'CM'.",
+          "For any integer N such that 1 <= N <= 3999, the Roman numeral string to_numerals(N) must be decomposable into a sequence of tokens from the set {M, CM, D, CD, C, XC, L, XL, X, IX, V, IV, I} such that the integer values corresponding to these tokens appear in non-increasing order.",
+          "to_numerals(1) must return the string \"I\".",
+          "to_numerals(3999) must return the string \"MMMCMXCIX\".",
+          "For any N in the set {4, 9, 40, 90, 400, 900}, to_numerals(N) must return the specific canonical Roman numeral string (IV, IX, XL, XC, CD, CM respectively).",
+          "For any N in the set {3, 8, 30, 80, 300, 800, 3000}, to_numerals(N) must return the specific canonical Roman numeral string (III, VIII, XXX, LXXX, CCC, DCCC, MMM respectively).",
+          "For any integer N such that N < 1, calling to_numerals(N) must raise a ValueError.",
+          "For any integer N such that N > 3999, calling to_numerals(N) must raise a ValueError.",
+          "For any input N that is not an integer (e.g., a float, string, None, or boolean), calling to_numerals(N) must raise a TypeError.",
+          "For any integer N such that 1 <= N <= 3999, the length of the string returned by to_numerals(N) must be between 1 and 15 (inclusive)."
+        ],
+        "explanation": null
+      },
+      "error": null
+    },
+    "signature_strategies": {
+      "raw": "{\n  \"result\": {\n    \"function_under_test\": {\n      \"name\": \"to_numerals\",\n      \"args\": [\"N\"],\n      \"returns\": \"str\"\n    },\n    \"property_function\": {\n      \"name\": \"prop_to_numerals_matches_spec\",\n      \"typing\": \"(func: Callable[[int], str], N: int) -> bool\",\n      \"args\": [\"func\", \"N\"],\n      \"returns\": \"bool\"\n    },\n    \"strategies\": [\n      {\n        \"arg\": \"N\",\n        \"strategy\": \"st.integers(min_value=1, max_value=3999)\",\n        \"notes\": \"Generates integers within the valid Roman numeral range [1, 3999] as specified by the problem's numeric domain.\"\n      }\n    ],\n    \"assumptions\": [],\n    \"imports\": [\n      \"from typing import Callable\",\n      \"from hypothesis import strategies as st\"\n    ]\n  }\n}",
+      "parsed": {
+        "result": {
+          "function_under_test": {
+            "name": "to_numerals",
+            "args": [
+              "N"
+            ],
+            "returns": "str"
+          },
+          "property_function": {
+            "name": "prop_to_numerals_matches_spec",
+            "typing": "(func: Callable[[int], str], N: int) -> bool",
+            "args": [
+              "func",
+              "N"
+            ],
+            "returns": "bool"
+          },
+          "strategies": [
+            {
+              "arg": "N",
+              "strategy": "st.integers(min_value=1, max_value=3999)",
+              "notes": "Generates integers within the valid Roman numeral range [1, 3999] as specified by the problem's numeric domain."
+            }
+          ],
+          "assumptions": [],
+          "imports": [
+            "from typing import Callable",
+            "from hypothesis import strategies as st"
+          ]
+        }
+      },
+      "error": null
+    }
+  }
+}
