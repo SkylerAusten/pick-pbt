@@ -164,3 +164,7 @@ class TestRoundTrip:
         for roman, expected in test_cases:
             assert from_numerals(roman) == expected
             assert to_numerals(expected) == roman
+
+
+if __name__ == "__main__":
+    pytest.main([__file__, "-v"])
