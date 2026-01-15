@@ -4,6 +4,6 @@ pandas
 openai
 ipywidgets
 dotenv
-google.generativeai
+google.genai
 networkx
 pytest
