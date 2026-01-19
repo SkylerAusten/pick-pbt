@@ -1,19 +1,210 @@
 <background>
-N/A
+This problem is a SAT solver for formulas in Conjunctive Normal Form (CNF) using the classic
+DPLL (Davis–Putnam–Logemann–Loveland) backtracking algorithm.
+
+Key ideas:
+- A CNF formula is a conjunction (AND) of clauses.
+- A clause is a disjunction (OR) of literals.
+- A literal is either a variable x (positive) or its negation ¬x (negative).
+
+The solver applies deterministic simplifications (unit propagation and pure-literal elimination)
+and then branches on a chosen literal to search for a satisfying assignment.
+
+Important nuance for this repo:
+The provided instance files include tokens like "-0". In Python, int("-0") == 0,
+so the sign information is lost if literals are represented as integers.
+This implementation uses a custom Literal type to preserve the sign of variable 0.
 </background>
 
 <custom_data_types>
-N/A
+Type aliases (conceptual):
+
+- Var: int
+	- Non-negative integer variable identifier.
+	- Variables are typically 0..N.
+
+- Literal:
+	- Fields:
+		- var: Var  (must be >= 0)
+		- negated: bool  (True means negated literal ¬var)
+	- Methods:
+		- negate() -> Literal  (toggles negated)
+		- __str__() -> str     ("-<var>" if negated else "<var>")
+	- Rationale:
+		- Preserves the distinction between "0" and "-0".
+
+- LiteralLike: Union[Literal, str, int]
+	- Input convenience type for parsing/normalization.
+	- Note: int cannot represent "-0" distinctly; use str "-0" or Literal(0, True).
+
+- Clause: frozenset[Literal]
+	- Represents a disjunction of literals.
+	- Empty clause (frozenset()) represents a contradiction.
+
+- CNF: tuple[Clause, ...]
+	- Represents a conjunction of clauses.
+	- Empty CNF (tuple()) represents a tautology / trivially satisfiable.
+
+- Model: dict[Var, bool]
+	- A (partial or full) assignment from variables to boolean values.
+	- Interpretation:
+		- If model[v] == True then variable v is True.
+		- If model[v] == False then variable v is False.
+		- A literal evaluates True iff it matches the variable’s assignment and its negation.
 </custom_data_types>
 
 <helper_functions>
-N/A
+The implementation includes helper functions for parsing, normalization, simplification,
+and DPLL heuristics:
+
+Parsing / normalization:
+- parse_literal(x: LiteralLike) -> Literal
+	- Accepts Literal, a token string like "3" or "-3" or "-0", or an integer.
+	- Raises ValueError on invalid strings, TypeError on unsupported input types.
+
+- make_clause(lits: Iterable[LiteralLike]) -> Clause
+	- Converts an iterable of literal-like inputs into a Clause (frozenset[Literal]).
+
+- make_cnf(clauses: Iterable[Iterable[LiteralLike] | Clause]) -> CNF
+	- Converts an iterable of clauses (either already frozenset[Literal] or iterables of literals)
+		into a CNF tuple.
+
+- parse_instances_text(text: str) -> List[CNF]
+	- Parses the repo’s instance format:
+		- Each non-empty line is a clause (space-separated literal tokens).
+		- Blank lines separate distinct SAT problems.
+
+- load_instances(path: Union[str, Path]) -> List[CNF]
+	- Reads a text file and returns parsed CNF problems.
+
+Core DPLL mechanics:
+- _apply_literal(formula: CNF, lit_true: Literal) -> Optional[CNF]
+	- Simplifies a CNF given that lit_true is set to True:
+		- Removes satisfied clauses (those containing lit_true)
+		- Removes falsified literal occurrences (removes ¬lit_true from clauses)
+		- Returns None if an empty clause is produced (conflict)
+
+- _assign(model: Model, lit_true: Literal) -> bool
+	- Updates the model so that lit_true is True.
+	- Returns False if the assignment contradicts the model.
+
+- _unit_propagate(formula: CNF, model: Model) -> Optional[CNF]
+	- Repeatedly finds unit clauses (size 1) and forces their literal True.
+	- Returns simplified CNF or None on contradiction.
+
+- _pure_literals(formula: CNF, model: Model) -> List[Literal]
+	- Returns literals whose variables appear with only one polarity in the remaining CNF.
+
+- _eliminate_pure_literals(formula: CNF, model: Model) -> Optional[CNF]
+	- Repeatedly assigns pure literals True and simplifies.
+
+- _choose_branch_literal(formula: CNF, model: Model) -> Literal
+	- Chooses an unassigned literal to branch on.
+	- Heuristic: pick a smallest clause first; within it, pick a stable minimal literal.
 </helper_functions>
 
 <function_signature>
-N/A
+Primary entrypoints:
+
+1) SAT solver:
+def dpll(
+		formula: Iterable[Iterable[LiteralLike] | Clause] | CNF,
+		model: Optional[Mapping[Var, bool]] = None,
+) -> Optional[Model]
+
+2) Convenience predicate:
+def is_satisfiable(
+		formula: Iterable[Iterable[LiteralLike] | Clause] | CNF,
+) -> bool
+
+3) CNF evaluator:
+def evaluate_cnf(
+		formula: Iterable[Iterable[LiteralLike] | Clause] | CNF,
+		model: Mapping[Var, bool],
+) -> bool
 </function_signature>
 
 <function_details>
-N/A
+dpll(formula, model=None) -> Optional[Model]
+
+Inputs:
+- formula: a CNF formula.
+	- Preferred representation: CNF = tuple[frozenset[Literal], ...]
+	- Convenience representations are accepted and normalized:
+		- A list/iterable of clauses, where each clause is:
+			- a frozenset[Literal], or
+			- an iterable of LiteralLike values (Literal, str token, or int)
+	- IMPORTANT: if variable 0 is negated, represent it as "-0" (string) or Literal(0, True).
+
+- model: optional partial assignment mapping var->bool.
+	- If provided, the solver first simplifies the CNF under those assignments.
+
+Outputs:
+- Returns a satisfying assignment dict {var: bool} if the formula is satisfiable.
+- Returns None if the formula is unsatisfiable.
+
+Algorithm:
+1) Apply initial model (if provided) by simplifying the CNF.
+2) Base cases:
+	 - Empty CNF (no clauses): SAT; return current model.
+	 - CNF contains an empty clause: UNSAT; return None.
+3) Deterministic simplifications (repeat until fixed point):
+	 - Unit propagation (forced literals from unit clauses)
+	 - Pure-literal elimination
+	 - If a contradiction is reached during simplification: return None.
+4) Branching:
+	 - Choose a literal using _choose_branch_literal.
+	 - Recurse on the CNF with that literal set True; if SAT, return model.
+	 - Otherwise recurse with the negation set True; if SAT, return model.
+	 - If both branches fail: return None.
+
+is_satisfiable(formula) -> bool
+- Returns True iff dpll(formula) is not None.
+
+evaluate_cnf(formula, model) -> bool
+- Returns True iff every clause has at least one literal that evaluates True under the model.
+- Variables missing from the model are treated as unknown and do not satisfy a literal.
+	(So a clause with all literals unassigned/false is unsatisfied.)
 </function_details>
+
+<hypothesis_guidance>
+Guidance for generating Hypothesis inputs (CNFs) for property-based tests.
+
+1) Represent literals
+- Prefer using Literal(var, negated) directly in strategies.
+- If you generate from tokens/strings, remember:
+	- "-0" must be a string (or a Literal), NOT an int.
+
+2) Small random CNFs (brute-force cross-check feasible)
+- Choose small variable counts (e.g., 0..6) and small clause sizes (e.g., 0..4).
+- Strategy outline:
+	- n_vars = st.integers(min_value=0, max_value=6)
+	- var = st.integers(min_value=0, max_value=n_vars-1)
+	- lit = st.builds(Literal, var, st.booleans())
+	- clause = st.sets(lit, min_size=0, max_size=4).map(frozenset)
+	- cnf = st.lists(clause, min_size=0, max_size=10).map(tuple)
+
+3) Guaranteed SAT CNFs ("passing" inputs)
+- Construct a witness assignment first, then ensure each clause is satisfied by construction.
+- Recipe:
+	- Generate a model witness: witness[v] = st.booleans() for v in vars.
+	- For each clause, generate some random literals, then force at least one literal’s polarity
+		to match the witness so it evaluates True.
+- Property to check:
+	- model = dpll(cnf)
+	- assert model is not None and evaluate_cnf(cnf, model)
+
+4) Guaranteed UNSAT CNFs ("failing" inputs)
+- Embed an unsatisfiable kernel, then add arbitrary extra clauses (which cannot make it SAT).
+- Minimal kernel:
+	- (x) AND (¬x)
+	- In this implementation, you can use x=0 to stress the "-0" handling:
+		- {Literal(0, False)} and {Literal(0, True)}
+- Property to check:
+	- assert dpll(cnf) is None
+
+5) Metamorphic / invariance checks
+- Reordering clauses/literals must not change satisfiable vs unsatisfiable.
+- Adding a clause that is already satisfied by a known model should not change satisfiability.
+- Adding a duplicate clause should not change satisfiability.
+</hypothesis_guidance>
